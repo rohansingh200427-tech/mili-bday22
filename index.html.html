@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>For MILI ❤️</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background: #0a0010;
+    color: white;
+    text-align: center;
+    overflow: hidden;
+    transition: background 0.5s, color 0.5s;
+}
+body.light { background: #fff0f5; color: #222; }
+
+.screen {
+    display: none;
+    height: 100vh;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    padding: 30px 20px;
+    animation: fadeUp 1s;
+    position: relative;
+    z-index: 2;
+    overflow-y: auto;
+}
+.active { display: flex; }
+
+@keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+h1 { font-size: clamp(1.5rem, 5vw, 2.4rem); margin-bottom: 10px; }
+h2 { font-size: clamp(1rem, 3vw, 1.5rem); margin-bottom: 10px; }
+p  { font-size: 1rem; line-height: 1.7; max-width: 480px; }
+
+button {
+    margin-top: 16px;
+    padding: 12px 28px;
+    border-radius: 25px;
+    background: linear-gradient(135deg, #ff69b4, #e91e8c);
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 4px 14px rgba(233,30,140,0.4);
+}
+button:hover  { transform: scale(1.05); box-shadow: 0 6px 20px rgba(233,30,140,0.6); }
+button:active { transform: scale(0.97); }
+
+input[type="password"] {
+    padding: 10px 16px;
+    border-radius: 12px;
+    border: 1.5px solid rgba(255,105,180,0.5);
+    text-align: center;
+    font-size: 1rem;
+    background: rgba(255,255,255,0.08);
+    color: white;
+    outline: none;
+    transition: border-color 0.2s;
+    width: 220px;
+}
+body.light input[type="password"] { background: rgba(0,0,0,0.06); color: #222; }
+input[type="password"]:focus { border-color: #ff69b4; }
+#error { color: #ff4da6; min-height: 20px; font-size: 0.9rem; margin-top: 8px; }
+
+/* Hearts */
+.heart {
+    position: fixed; top: -40px; color: pink;
+    font-size: 1.2rem; animation: fall linear forwards;
+    z-index: 0; pointer-events: none;
+}
+@keyframes fall {
+    0%   { transform: translateY(0) rotate(0deg); opacity: 1; }
+    80%  { opacity: 0.8; }
+    100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
+}
+
+/* ── Countdown ── */
+.cd-title    { font-size: clamp(1.3rem,4vw,2rem); color: #f9a8d4; margin-bottom: 4px; }
+.cd-subtitle { font-size: 0.95rem; color: rgba(249,168,212,0.6); margin-bottom: 28px; }
+.cd-boxes    { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+.cd-box {
+    background: rgba(255,105,180,0.1);
+    border: 1px solid rgba(255,105,180,0.3);
+    border-radius: 16px; padding: 18px 22px; min-width: 80px;
+    backdrop-filter: blur(6px);
+}
+.cd-num   { font-size: clamp(2rem,6vw,3rem); font-weight:700; color:#ff69b4; line-height:1; font-variant-numeric:tabular-nums; }
+.cd-label { font-size:0.75rem; color:rgba(255,255,255,0.5); text-transform:uppercase; letter-spacing:1.5px; margin-top:6px; }
+body.light .cd-label { color: rgba(0,0,0,0.4); }
+body.light .cd-box   { background: rgba(255,105,180,0.08); border-color: rgba(255,105,180,0.25); }
+.cd-bday-msg { font-size: clamp(1.1rem,3vw,1.4rem); color:#f9a8d4; animation: pulse 1.5s ease-in-out infinite; margin-top:10px; }
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.7;transform:scale(1.04)} }
+
+/* ── Typed text ── */
+#typed { font-size: clamp(1rem,2.8vw,1.2rem); line-height:1.8; max-width:500px; padding:0 10px; }
+#typed-cursor { animation: blink 0.7s step-end infinite; }
+@keyframes blink { 50%{opacity:0} }
+
+/* ── Gallery ── */
+.gallery { position:relative; width:260px; height:340px; margin:0 auto; }
+.gallery img {
+    position:absolute; top:0; left:0; width:260px; height:340px;
+    object-fit:cover; border-radius:20px; display:none;
+    border:2px solid rgba(255,105,180,0.4);
+}
+.gallery img.activeImg { display:block; animation: fadeUp 1s; }
+
+/* ── Gift Box ── */
+#screen6 { gap: 16px; }
+.gift-wrap { position:relative; cursor:pointer; user-select:none; }
+
+.gift-box-svg { width: 180px; height: 180px; transition: transform 0.3s; filter: drop-shadow(0 0 20px rgba(255,105,180,0.5)); }
+.gift-wrap:hover .gift-box-svg { transform: scale(1.05); }
+
+.gift-hint { font-size:0.85rem; color:rgba(249,168,212,0.6); margin-top:8px; animation: pulse 2s ease-in-out infinite; }
+
+/* Lid animation */
+.gift-lid { transform-origin: bottom center; transition: transform 0.6s cubic-bezier(0.175,0.885,0.32,1.275); }
+.gift-open .gift-lid { transform: translateY(-60px) rotate(-15deg); }
+
+/* Revealed message */
+.gift-revealed {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    animation: fadeUp 0.8s;
+    max-width: 420px;
+}
+.gift-revealed.show { display: flex; }
+
+.gift-msg {
+    background: rgba(255,105,180,0.1);
+    border: 1px solid rgba(255,105,180,0.3);
+    border-radius: 20px;
+    padding: 24px 28px;
+    font-size: 1.05rem;
+    line-height: 1.8;
+    color: #f9d4e8;
+    max-width: 400px;
+}
+.gift-emoji { font-size: 2.5rem; animation: bounceIn 0.6s; }
+@keyframes bounceIn { 0%{transform:scale(0)} 60%{transform:scale(1.2)} 100%{transform:scale(1)} }
+
+/* ── Final Screen (photos + message) ── */
+#screen5 { gap: 20px; overflow-y: auto; padding: 40px 20px; }
+
+.final-photos {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
+}
+.final-photos img {
+    width: 110px;
+    height: 140px;
+    object-fit: cover;
+    border-radius: 16px;
+    border: 2px solid rgba(255,105,180,0.5);
+    box-shadow: 0 4px 20px rgba(255,105,180,0.3);
+    transition: transform 0.3s;
+    animation: fadeUp 1s both;
+}
+.final-photos img:nth-child(1) { animation-delay: 0.1s; }
+.final-photos img:nth-child(2) { animation-delay: 0.3s; transform: translateY(-12px); }
+.final-photos img:nth-child(3) { animation-delay: 0.5s; }
+.final-photos img:hover { transform: scale(1.06) translateY(-4px); }
+
+.final-msg {
+    font-size: clamp(1rem,2.5vw,1.15rem);
+    color: #f9d4e8;
+    line-height: 1.8;
+    max-width: 440px;
+    margin: 0 auto;
+}
+#screen5 h1 { font-size: clamp(1.8rem,5vw,2.8rem); color: #ff69b4; }
+
+/* ── Date Proposal Screen ── */
+#screen7 { gap: 18px; }
+
+.proposal-card {
+    background: rgba(255,105,180,0.08);
+    border: 1px solid rgba(255,105,180,0.3);
+    border-radius: 24px;
+    padding: 32px 28px;
+    max-width: 420px;
+    backdrop-filter: blur(8px);
+    animation: fadeUp 1s;
+}
+.proposal-emoji { font-size: 3rem; margin-bottom: 10px; }
+.proposal-msg {
+    font-size: clamp(1rem,2.6vw,1.15rem);
+    line-height: 1.85;
+    color: #f9d4e8;
+}
+.proposal-date {
+    font-size: clamp(1.1rem,3vw,1.4rem);
+    color: #ff69b4;
+    font-weight: 700;
+    margin: 14px 0 6px;
+}
+
+.answer-btns { display:flex; gap:16px; justify-content:center; flex-wrap:wrap; margin-top:8px; }
+
+.btn-yes {
+    background: linear-gradient(135deg, #ff69b4, #e91e8c);
+    padding: 14px 36px;
+    font-size: 1.1rem;
+}
+.btn-no {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,105,180,0.3);
+    padding: 14px 36px;
+    font-size: 1rem;
+    box-shadow: none;
+    position: relative;
+    transition: all 0.2s;
+}
+.btn-no:hover { background: rgba(255,255,255,0.05); }
+
+/* Yes response */
+.yes-response {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    animation: fadeUp 0.8s;
+}
+.yes-response.show { display: flex; }
+.yes-response h2 { color: #ff69b4; font-size: clamp(1.4rem,4vw,2rem); }
+.yes-response p  { color: #f9d4e8; font-size: 1rem; }
+
+/* Top controls */
+.top-btns { position:fixed; top:12px; right:12px; display:flex; gap:8px; z-index:100; }
+.top-btns button { padding:8px 12px; font-size:1rem; margin:0; }
+#musicBtn { background: linear-gradient(135deg,#7c3aed,#a855f7); box-shadow:0 4px 14px rgba(168,85,247,0.4); }
+</style>
+</head>
+<body>
+
+<div class="top-btns">
+  <button id="musicBtn" onclick="toggleMusic()">🎵</button>
+  <button onclick="toggleTheme()" id="themeBtn">🌙</button>
+</div>
+
+<iframe id="ytMusic" width="0" height="0" src="" frameborder="0"
+  allow="autoplay; encrypted-media" style="position:absolute;left:-9999px"></iframe>
+
+<!-- SCREEN 0: Password -->
+<div class="screen active" id="screen0">
+  <h2>Enter Password 🔐</h2>
+  <input type="password" id="pass" placeholder="••••" onkeydown="if(event.key==='Enter') checkPass()">
+  <p id="error"></p>
+  <button onclick="checkPass()">Unlock ❤️</button>
+</div>
+
+<!-- SCREEN 1: Countdown -->
+<div class="screen" id="screen1">
+  <p class="cd-title">🎂 Mili's Birthday Countdown</p>
+  <p class="cd-subtitle" id="cd-subtitle">May 29 is almost here...</p>
+  <div class="cd-boxes" id="cd-boxes">
+    <div class="cd-box"><div class="cd-num" id="cd-days">00</div><div class="cd-label">Days</div></div>
+    <div class="cd-box"><div class="cd-num" id="cd-hours">00</div><div class="cd-label">Hours</div></div>
+    <div class="cd-box"><div class="cd-num" id="cd-mins">00</div><div class="cd-label">Minutes</div></div>
+    <div class="cd-box"><div class="cd-num" id="cd-secs">00</div><div class="cd-label">Seconds</div></div>
+  </div>
+  <p class="cd-bday-msg" id="cd-bday-msg" style="display:none">🎉 It's Mili's Birthday! 🎉</p>
+  <button id="cd-enter-btn" onclick="show(2)" style="display:none;margin-top:20px;">Open her surprise 🎁</button>
+</div>
+
+<!-- SCREEN 2: Welcome -->
+<div class="screen" id="screen2">
+  <h1>Hey MILI ❤️</h1>
+  <p>Something very special is waiting for you...</p>
+  <button onclick="next(3)">Open 💌</button>
+</div>
+
+<!-- SCREEN 3: Typed Message -->
+<div class="screen" id="screen3">
+  <div id="typed"></div>
+  <br>
+  <button id="memBtn" onclick="next(4)" style="display:none">Memories 📸</button>
+</div>
+
+<!-- SCREEN 4: Slideshow -->
+<div class="screen" id="screen4">
+  <p style="color:#f9a8d4;font-size:0.9rem;margin-bottom:10px;">Your beautiful memories 💕</p>
+  <div class="gallery">
+    <img src="mili1.jpg.jpeg"  class="activeImg" onerror="this.style.display='none'">
+    <img src="mili2.jpg.jpeg"  onerror="this.style.display='none'">
+    <img src="mili3.jpg.jpeg"  onerror="this.style.display='none'">
+    <img src="mili4.jpg.jpeg"  onerror="this.style.display='none'">
+    <img src="mili5.jpg.jpeg"  onerror="this.style.display='none'">
+    <img src="mili6.jpg.jpeg"  onerror="this.style.display='none'">
+    <img src="mili7.jpg.jpeg"  onerror="this.style.display='none'">
+    <img src="mili8.jpg.jpeg"  onerror="this.style.display='none'">
+    <img src="mili9.jpeg"      onerror="this.style.display='none'">
+    <img src="mili10.jpeg"     onerror="this.style.display='none'">
+    <img src="mili11.jpg"      onerror="this.style.display='none'">
+    <img src="mili12.jpeg"     onerror="this.style.display='none'">
+    <img src="mili13.jpeg"     onerror="this.style.display='none'">
+    <img src="mili14.jpeg"     onerror="this.style.display='none'">
+    <img src="mili15.jpeg"     onerror="this.style.display='none'">
+    <img src="mili16.jpeg"     onerror="this.style.display='none'">
+    <img src="mili17.jpeg"     onerror="this.style.display='none'">
+    <img src="mili18.jpeg"     onerror="this.style.display='none'">
+    <img src="mili19.jpeg"     onerror="this.style.display='none'">
+    <img src="mili20.jpeg"     onerror="this.style.display='none'">
+    <img src="mili21.jpeg"     onerror="this.style.display='none'">
+  </div>
+  <br>
+  <button onclick="next(6)">Something special 🎁</button>
+</div>
+
+<!-- SCREEN 6: Gift Box -->
+<div class="screen" id="screen6">
+  <p style="color:#f9a8d4;font-size:1.1rem;margin-bottom:4px;">A little something for you 💝</p>
+
+  <!-- Gift box (visible before open) -->
+  <div id="giftWrap" class="gift-wrap" onclick="openGift()">
+    <svg class="gift-box-svg" id="giftSvg" viewBox="0 0 180 180" xmlns="http://www.w3.org/2000/svg">
+      <!-- Lid -->
+      <g class="gift-lid" id="giftLid">
+        <rect x="30" y="52" width="120" height="28" rx="6" fill="#e91e8c"/>
+        <rect x="82" y="52" width="16" height="28" fill="#ff69b4"/>
+        <!-- bow loops -->
+        <ellipse cx="90" cy="52" rx="22" ry="14" fill="#ff4da6" transform="rotate(-20,90,52)"/>
+        <ellipse cx="90" cy="52" rx="22" ry="14" fill="#ff4da6" transform="rotate(20,90,52)"/>
+        <circle cx="90" cy="52" r="10" fill="#ffb3d1"/>
+      </g>
+      <!-- Box body -->
+      <rect x="24" y="80" width="132" height="88" rx="8" fill="#c2185b"/>
+      <rect x="82" y="80" width="16" height="88" fill="#e91e8c"/>
+      <!-- shine -->
+      <rect x="34" y="90" width="30" height="6" rx="3" fill="rgba(255,255,255,0.15)"/>
+    </svg>
+    <p class="gift-hint">Tap to unwrap! 🎀</p>
+  </div>
+
+  <!-- Revealed content -->
+  <div class="gift-revealed" id="giftRevealed">
+    <div class="gift-emoji">🎉💖✨</div>
+    <div class="gift-msg">
+      Happy Birthday Mili! 🎂<br><br>
+      You deserve all the love, all the smiles, and all the beautiful things life has to offer.
+      Just know that someone out there thinks the world of you —
+      and is so grateful you exist. 💖<br><br>
+      Now scroll ahead... there's one more surprise waiting 😊
+    </div>
+    <button onclick="next(5)">See the surprise 💕</button>
+  </div>
+</div>
+
+<!-- SCREEN 5: Final (3 photos + message) -->
+<div class="screen" id="screen5">
+  <h1>Us 💖</h1>
+  <div class="final-photos">
+    <img src="mili22.jpeg" onerror="this.style.display='none'" alt="Us 1">
+    <img src="mili23.jpeg" onerror="this.style.display='none'" alt="Us 2">
+    <img src="mili25.jpeg" onerror="this.style.display='none'" alt="Us 3">
+  </div>
+  <p class="final-msg">
+    Every moment with you is my favourite. Thank you for being in my life, for your smile,
+    your kindness, and for making ordinary days feel special. 💕
+  </p>
+  <button onclick="next(7)" style="margin-top:10px;">One more thing... 🌙</button>
+</div>
+
+<!-- SCREEN 7: Date Proposal -->
+<div class="screen" id="screen7">
+  <div class="proposal-card" id="proposalCard">
+    <div class="proposal-emoji">🌹</div>
+    <p class="proposal-msg">
+      Hey birthday girl 🎂<br><br>
+      I was thinking… your special day deserves something more than just texts and wishes.
+      So how about you let me take you out on a proper date and make a few beautiful memories together? 💖
+    </p>
+    <p class="proposal-date">📅 4th June</p>
+    <div class="answer-btns">
+      <button class="btn-yes" onclick="answerYes()">Yes! 💖</button>
+      <button class="btn-no" id="btnNo" onmouseover="runAway(this)" ontouchstart="runAway(this)">Maybe not 😅</button>
+    </div>
+  </div>
+
+  <!-- Yes response -->
+  <div class="yes-response" id="yesResponse">
+    <h2>Yay!! 🎉💖</h2>
+    <p>It's a date! 4th June is going to be the most beautiful day. 🌹<br>Can't wait to see you smile 😊</p>
+    <div style="font-size:2.5rem;margin-top:8px;">🥂💕🌙</div>
+  </div>
+</div>
+
+<script>
+let slideInterval = null;
+let timerInterval = null;
+let musicOn       = false;
+const MUSIC_ID    = "0enmMyV1Q48";
+
+function pad(n) { return String(n).padStart(2,'0'); }
+function isBirthday() { const n=new Date(); return n.getMonth()===4&&n.getDate()===29; }
+function getNextBirthday() {
+  const n=new Date(), y=n.getFullYear();
+  let b=new Date(y,4,29,0,0,0);
+  if(n>=b) b=new Date(y+1,4,29,0,0,0);
+  return b;
+}
+
+/* ── Password ── */
+function checkPass() {
+  const val = document.getElementById("pass").value.trim().toLowerCase();
+  if (val === "mili") {
+    startMusic();
+    show(1);
+    startCountdown();
+  } else {
+    const err = document.getElementById("error");
+    err.innerText = "Wrong password 😝";
+    document.getElementById("pass").value = "";
+    setTimeout(() => err.innerText = "", 2000);
+  }
+}
+
+/* ── Countdown ── */
+function startCountdown() {
+  clearInterval(timerInterval);
+  if (isBirthday()) { showBirthdayMode(); return; }
+  timerInterval = setInterval(() => {
+    if (isBirthday()) { clearInterval(timerInterval); showBirthdayMode(); return; }
+    const gap = getNextBirthday() - Date.now();
+    const d=Math.floor(gap/86400000),
+          h=Math.floor((gap%86400000)/3600000),
+          m=Math.floor((gap%3600000)/60000),
+          s=Math.floor((gap%60000)/1000);
+    document.getElementById("cd-days").textContent  = pad(d);
+    document.getElementById("cd-hours").textContent = pad(h);
+    document.getElementById("cd-mins").textContent  = pad(m);
+    document.getElementById("cd-secs").textContent  = pad(s);
+    if(d===0) document.getElementById("cd-subtitle").textContent="Just hours away... 💕";
+    else if(d===1) document.getElementById("cd-subtitle").textContent="Tomorrow is the day! 🎉";
+  }, 1000);
+}
+
+function showBirthdayMode() {
+  document.getElementById("cd-boxes").style.display    = "none";
+  document.getElementById("cd-subtitle").style.display = "none";
+  document.getElementById("cd-bday-msg").style.display = "block";
+  document.getElementById("cd-enter-btn").style.display= "inline-block";
+  launchConfetti();
+}
+
+/* ── Confetti ── */
+function launchConfetti(count=80) {
+  const colors=['#ff69b4','#f9a8d4','#ce93d8','#fbbf24','#86efac','#67e8f9'];
+  for(let i=0;i<count;i++){
+    const c=document.createElement('div');
+    c.style.cssText=`position:fixed;left:${Math.random()*100}vw;top:${Math.random()*30}vh;
+      width:${6+Math.random()*6}px;height:${6+Math.random()*6}px;
+      background:${colors[Math.floor(Math.random()*colors.length)]};
+      border-radius:${Math.random()>.5?'50%':'2px'};pointer-events:none;z-index:999;
+      animation:fall ${1.5+Math.random()*2}s linear ${Math.random()*1.5}s forwards`;
+    document.body.appendChild(c);
+    setTimeout(()=>c.remove(),4500);
+  }
+}
+
+/* ── Navigation ── */
+function show(n) {
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById("screen"+n).classList.add('active');
+}
+function next(n) {
+  show(n);
+  if(n===3) typeText();
+  if(n===4) startSlideshow();
+}
+
+/* ── Typing ── */
+const message = "Happy Birthday Mili ❤️\n\nToday is all about celebrating someone who means so much to me and holds a very special place in my heart.\n\nI genuinely want to see you happy, smiling and successful in every part of your life — because your happiness matters a lot to me.\n\nThank you for being you. Stay the amazing person you are. People like you are rare, and I'm really grateful to have you in my life. 💖";
+
+function typeText() {
+  const el=document.getElementById("typed"), btn=document.getElementById("memBtn");
+  const parts=message.split('\n'), nodes=[];
+  parts.forEach((part,pi)=>{
+    for(const ch of part) nodes.push({type:'text',ch});
+    if(pi<parts.length-1) nodes.push({type:'br'});
+  });
+  el.innerHTML='';
+  const cursor=document.createElement('span');
+  cursor.id='typed-cursor'; cursor.textContent='|';
+  el.appendChild(cursor);
+  let i=0, currentTextNode=null;
+  const inter=setInterval(()=>{
+    if(i<nodes.length){
+      const node=nodes[i];
+      if(node.type==='br'){ currentTextNode=null; el.insertBefore(document.createElement('br'),cursor); }
+      else {
+        if(!currentTextNode){ currentTextNode=document.createTextNode(''); el.insertBefore(currentTextNode,cursor); }
+        currentTextNode.textContent+=node.ch;
+      }
+      i++;
+    } else {
+      clearInterval(inter);
+      cursor.remove();
+      btn.style.display='inline-block';
+    }
+  },35);
+}
+
+/* ── Slideshow ── */
+function startSlideshow() {
+  const imgs=Array.from(document.querySelectorAll(".gallery img")).filter(img=>img.style.display!=='none');
+  if(!imgs.length) return;
+  let i=0;
+  imgs.forEach(img=>img.classList.remove("activeImg"));
+  imgs[0].classList.add("activeImg");
+  clearInterval(slideInterval);
+  slideInterval=setInterval(()=>{ imgs[i].classList.remove("activeImg"); i=(i+1)%imgs.length; imgs[i].classList.add("activeImg"); },2500);
+}
+
+/* ── Gift Box ── */
+function openGift() {
+  const lid = document.getElementById("giftLid");
+  lid.style.transform = "translateY(-70px) rotate(-20deg)";
+  lid.style.opacity   = "0";
+  lid.style.transition= "all 0.7s cubic-bezier(0.175,0.885,0.32,1.275)";
+  launchConfetti(60);
+  setTimeout(() => {
+    document.getElementById("giftWrap").style.display    = "none";
+    document.getElementById("giftRevealed").classList.add("show");
+  }, 700);
+}
+
+/* ── Date Proposal ── */
+function answerYes() {
+  document.getElementById("proposalCard").style.display = "none";
+  document.getElementById("yesResponse").classList.add("show");
+  launchConfetti(120);
+}
+
+// "No" button runs away on hover
+let noMoves = 0;
+function runAway(btn) {
+  noMoves++;
+  if(noMoves > 5){ btn.style.display='none'; return; } // disappears after 5 attempts
+  const maxX = window.innerWidth  - 120;
+  const maxY = window.innerHeight - 60;
+  btn.style.position = 'fixed';
+  btn.style.left = Math.random() * maxX + 'px';
+  btn.style.top  = Math.random() * maxY + 'px';
+}
+
+/* ── Falling hearts ── */
+setInterval(()=>{
+  const h=document.createElement("div");
+  h.className="heart";
+  h.innerHTML=["💖","💕","💗","💓","🌸","✨"][Math.floor(Math.random()*6)];
+  h.style.left=(Math.random()*100)+"vw";
+  h.style.fontSize=(0.8+Math.random()*1.2)+"rem";
+  h.style.animationDuration=(3+Math.random()*4)+"s";
+  document.body.appendChild(h);
+  setTimeout(()=>h.remove(),7000);
+},500);
+
+/* ── Music ── */
+function startMusic() {
+  document.getElementById("ytMusic").src=`https://www.youtube.com/embed/${MUSIC_ID}?autoplay=1&loop=1&playlist=${MUSIC_ID}&enablejsapi=1`;
+  musicOn=true; document.getElementById("musicBtn").textContent="🎵";
+}
+function toggleMusic() {
+  if(musicOn){ document.getElementById("ytMusic").src=""; musicOn=false; document.getElementById("musicBtn").textContent="🔇"; }
+  else { startMusic(); }
+}
+
+/* ── Theme ── */
+function toggleTheme() {
+  const isLight=document.body.classList.toggle("light");
+  document.getElementById("themeBtn").textContent=isLight?"☀️":"🌙";
+}
+</script>
+</body>
+</html>
